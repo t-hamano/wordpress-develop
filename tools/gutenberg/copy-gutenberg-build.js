@@ -816,9 +816,10 @@ function parsePHPArray( phpArrayContent ) {
  * Transform PHP file contents to work in Core.
  *
  * @param {string} content  - File content.
+ * @param {string} filepath - Optional. File path being transformed.
  * @return {string} Transformed content.
  */
-function transformPHPContent( content ) {
+function transformPHPContent( content, filepath = '' ) {
 	let transformed = content;
 
 	// Fix boot module asset file path for Core's different directory structure
@@ -829,6 +830,17 @@ function transformPHPContent( content ) {
 		/__DIR__\s*\.\s*['"]\/\.\.\/\.\.\/modules\/boot\/index\.min\.asset\.php['"]/g,
 		"ABSPATH . WPINC . '/js/dist/script-modules/boot/index.min.asset.php'"
 	);
+
+	// Fix build_url in constants.php for Core's different directory structure
+	// FROM: 'build_url' => plugin_dir_url( __FILE__ )
+	// TO:   'build_url' => includes_url( 'build/' )
+	// This ensures paths like 'routes/' are correctly concatenated
+	if ( filepath && filepath.endsWith( 'constants.php' ) ) {
+		transformed = transformed.replace(
+			/(['"]build_url['"]\s*=>\s*)plugin_dir_url\(\s*__FILE__\s*\)/g,
+			"$1includes_url( 'build/' )"
+		);
+	}
 
 	return transformed;
 }
@@ -862,7 +874,7 @@ async function main() {
 		if ( fs.existsSync( src ) ) {
 			fs.mkdirSync( path.dirname( dest ), { recursive: true } );
 			let content = fs.readFileSync( src, 'utf8' );
-			content = transformPHPContent( content );
+			content = transformPHPContent( content, file );
 			fs.writeFileSync( dest, content );
 			console.log( `   ✅ ${ file }` );
 		} else {
@@ -879,7 +891,9 @@ async function main() {
 
 		if ( fs.existsSync( src ) ) {
 			console.log( `   📁 Copying ${ dir }/...` );
-			copyDirectory( src, dest, transformPHPContent );
+			copyDirectory( src, dest, ( content, srcPath, destPath ) => {
+				return transformPHPContent( content, path.basename( destPath ) );
+			} );
 			console.log( `   ✅ ${ dir }/ copied` );
 		}
 	}
