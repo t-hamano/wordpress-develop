@@ -67,12 +67,12 @@ class WP_Icons_Registry {
 
 		foreach ( $collection as $icon_name => $icon_data ) {
 			if (
-				empty( $icon_data['filePath'] )
-				|| ! is_string( $icon_data['filePath'] )
+				empty( $icon_data['file_path'] )
+				|| ! is_string( $icon_data['file_path'] )
 			) {
 				_doing_it_wrong(
 					__METHOD__,
-					__( 'Core icon collection manifest must provide valid a "filePath" for each icon.' ),
+					__( 'Core icon collection manifest must provide valid a "file_path" for each icon.' ),
 					'7.0.0'
 				);
 				return;
