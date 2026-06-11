@@ -763,11 +763,11 @@ module.exports = function(grunt) {
 								/_x\(\s*([^,]+),\s*([^,]+),\s*['"]gutenberg['"]\s*\)/g,
 								'_x( $1, $2 )'
 							)
-							// Strip the 'library/' prefix from filePath values so they
+							// Strip the 'library/' prefix from file_path values so they
 							// resolve correctly relative to wp-includes/images/icon-library/.
 							.replace(
-								/'filePath' => 'library\//g,
-								'\'filePath\' => \''
+								/'file_path' => 'library\//g,
+								'\'file_path\' => \''
 							);
 					}
 				},
