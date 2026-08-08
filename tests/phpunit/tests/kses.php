@@ -1224,6 +1224,7 @@ EOF;
 	 * @ticket 64414
 	 * @ticket 65457
 	 * @ticket 64974
+	 * @ticket 65832
 	 *
 	 * @dataProvider data_safecss_filter_attr
 	 *
@@ -1765,6 +1766,96 @@ EOF;
 			array(
 				'css'      => 'text-anchor: middle',
 				'expected' => 'text-anchor: middle',
+			),
+			// Transform functions introduced in 7.1.0.
+			array(
+				'css'      => 'transform: none',
+				'expected' => 'transform: none',
+			),
+			array(
+				'css'      => 'transform: rotate(45deg)',
+				'expected' => 'transform: rotate(45deg)',
+			),
+			array(
+				'css'      => 'transform: translate(10px, 20px)',
+				'expected' => 'transform: translate(10px, 20px)',
+			),
+			array(
+				'css'      => 'transform: scale(2)',
+				'expected' => 'transform: scale(2)',
+			),
+			array(
+				'css'      => 'transform: matrix(1, 0, 0, 1, 10, 20)',
+				'expected' => 'transform: matrix(1, 0, 0, 1, 10, 20)',
+			),
+			array(
+				'css'      => 'transform: rotateX(45deg) skewY(10deg) translateZ(1px)',
+				'expected' => 'transform: rotateX(45deg) skewY(10deg) translateZ(1px)',
+			),
+			array(
+				'css'      => 'transform: rotate3d(1, 1, 1, 45deg) scale3d(1, 2, 3) perspective(500px)',
+				'expected' => 'transform: rotate3d(1, 1, 1, 45deg) scale3d(1, 2, 3) perspective(500px)',
+			),
+			array(
+				'css'      => 'transform: translate(calc(10px + 1em), var(--offset))',
+				'expected' => 'transform: translate(calc(10px + 1em), var(--offset))',
+			),
+			// Basic shapes for `clip-path` introduced in 7.1.0.
+			array(
+				'css'      => 'clip-path: inset(10px)',
+				'expected' => 'clip-path: inset(10px)',
+			),
+			array(
+				'css'      => 'clip-path: circle(50% at 50% 50%)',
+				'expected' => 'clip-path: circle(50% at 50% 50%)',
+			),
+			array(
+				'css'      => 'clip-path: polygon(0 0, 100% 0, 100% 100%)',
+				'expected' => 'clip-path: polygon(0 0, 100% 0, 100% 100%)',
+			),
+			// URL support for the SVG element reference properties introduced in 7.1.0.
+			array(
+				'css'      => 'fill: url(#grad1)',
+				'expected' => 'fill: url(#grad1)',
+			),
+			array(
+				'css'      => 'stroke: url(#grad1) red',
+				'expected' => 'stroke: url(#grad1) red',
+			),
+			array(
+				'css'      => 'clip-path: url(#c)',
+				'expected' => 'clip-path: url(#c)',
+			),
+			array(
+				'css'      => 'mask: url(#m)',
+				'expected' => 'mask: url(#m)',
+			),
+			array(
+				'css'      => 'marker-start: url(#arrow)',
+				'expected' => 'marker-start: url(#arrow)',
+			),
+			// The URL data type check still rejects disallowed protocols.
+			array(
+				'css'      => 'fill: url(javascript:alert(1))',
+				'expected' => '',
+			),
+			array(
+				'css'      => 'clip-path: url("javascript:alert(1)")',
+				'expected' => '',
+			),
+			// A property which is not a URL data type still rejects url().
+			array(
+				'css'      => 'stroke-width: url(#grad1)',
+				'expected' => '',
+			),
+			// Unrecognized functions are still rejected.
+			array(
+				'css'      => 'transform: rotateW(45deg)',
+				'expected' => '',
+			),
+			array(
+				'css'      => 'clip-path: expression(alert(1))',
+				'expected' => '',
 			),
 		);
 	}

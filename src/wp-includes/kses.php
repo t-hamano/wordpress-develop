@@ -2638,6 +2638,8 @@ function kses_init() {
  * @since 6.6.0 Added support for `grid-column`, `grid-row`, and `container-type`.
  * @since 6.9.0 Added support for `white-space`.
  * @since 7.1.0 Extended gradient support to allow any single-level nested function.
+ *              Added support for transform functions, `clip-path` basic shapes,
+ *              and URLs in the SVG element reference properties.
  *
  * @param string $css        A string of CSS rules, decoded from an HTML `style` attribute.
  * @param string $deprecated Not used.
@@ -2906,6 +2908,16 @@ function safecss_filter_attr( $css, $deprecated = '' ) {
 
 		'list-style',
 		'list-style-image',
+
+		'clip-path',
+		'fill',
+		'mask',
+		'stroke',
+
+		'marker',
+		'marker-end',
+		'marker-mid',
+		'marker-start',
 	);
 
 	/*
@@ -3004,7 +3016,17 @@ function safecss_filter_attr( $css, $deprecated = '' ) {
 			 * Nested functions and parentheses are also removed, so long as the parentheses are balanced.
 			 */
 			$css_test_string = preg_replace(
-				'/\b(?:var|calc|min|max|minmax|clamp|repeat)(\((?:[^()]|(?1))*\))/',
+				'/\b(?:'
+					. 'var|calc|minmax|min|max|clamp|repeat'
+					// Transform functions, used by `transform`.
+					. '|matrix3d|matrix|perspective'
+					. '|rotate3d|rotate[XYZ]|rotate'
+					. '|scale3d|scale[XYZ]|scale'
+					. '|skew[XY]|skew'
+					. '|translate3d|translate[XYZ]|translate'
+					// Basic shapes, used by `clip-path`.
+					. '|inset|circle|ellipse|polygon|path'
+				. ')(\((?:[^()]|(?1))*\))/',
 				'',
 				$css_test_string
 			);
